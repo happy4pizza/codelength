@@ -1,0 +1,8 @@
+Need to:
+- Create card generation also add state generation (SQL or JSON?)
+- Create front end to show LLMs typing
+- Create user interfact to read data from board
+- Base deployment
+- Create API key management
+- Test
+
