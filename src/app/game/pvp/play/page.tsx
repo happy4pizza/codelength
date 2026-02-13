@@ -1,12 +1,9 @@
-import GameScreen from '@/components/game/GameScreen';
+import SpinDial from '@/components/game/SpinDial';
 
 export default function PvpPlayPage() {
   return (
-    <GameScreen
-      modeTitle="Player vs Player"
-      playerOne={{ name: 'Player 1', subtitle: 'Human' }}
-      playerTwo={{ name: 'Player 2', subtitle: 'Human' }}
-      showPromptPanel={false}
-    />
+    <main className="theme-page theme-center spin-page">
+      <SpinDial />
+    </main>
   );
 }

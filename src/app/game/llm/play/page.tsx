@@ -1,5 +1,11 @@
 import LlmPlayClient from './LlmPlayClient';
+import Back from '@/components/Back';
 
 export default function LlmPlayPage() {
-  return <LlmPlayClient />;
+  return (
+    <>
+      <Back href="/" />
+      <LlmPlayClient />
+    </>
+  );
 }

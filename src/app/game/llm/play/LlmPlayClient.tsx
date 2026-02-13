@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import GameScreen from '@/components/game/GameScreen';
+import SpinDial from '@/components/game/SpinDial';
 import { useLlmMatchConfig } from '../LlmMatchConfigContext';
-
-const PROVIDER_LABELS = {
-  openai: 'OpenAI',
-  google: 'Google (Gemini)',
-  anthropic: 'Anthropic (Claude)',
-} as const;
 
 export default function LlmPlayClient() {
   const { matchConfig } = useLlmMatchConfig();
@@ -32,27 +26,8 @@ export default function LlmPlayClient() {
   }
 
   return (
-    <GameScreen
-      modeTitle="LLM Game"
-      playerOne={{
-        name: 'Player 1',
-        subtitle: `${PROVIDER_LABELS[matchConfig.playerOne.provider]} • ${matchConfig.playerOne.model}`,
-      }}
-      playerTwo={{
-        name: 'Player 2',
-        subtitle: `${PROVIDER_LABELS[matchConfig.playerTwo.provider]} • ${matchConfig.playerTwo.model}`,
-      }}
-      showPromptPanel
-      prompts={[
-        {
-          player: 'Player 1 Prompt',
-          prompt: `You are ${matchConfig.playerOne.model}. Play strategically and justify each move briefly.`,
-        },
-        {
-          player: 'Player 2 Prompt',
-          prompt: `You are ${matchConfig.playerTwo.model}. Counter the opponent and prioritize winning lines.`,
-        },
-      ]}
-    />
+    <main className="theme-page theme-center spin-page">
+      <SpinDial />
+    </main>
   );
 }

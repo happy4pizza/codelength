@@ -1,3 +1,4 @@
+import Back from '@/components/Back';
 import type { ReactNode } from 'react';
 
 type PvpLayoutProps = {
@@ -5,5 +6,10 @@ type PvpLayoutProps = {
 };
 
 export default function PvpLayout({ children }: PvpLayoutProps) {
-  return <>{children}</>;
+  return (
+    <>
+      <Back href="/" />
+      {children}
+    </>
+  );
 }
