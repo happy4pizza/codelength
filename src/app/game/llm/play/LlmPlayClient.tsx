@@ -27,7 +27,7 @@ export default function LlmPlayClient() {
 
   return (
     <main className="theme-page theme-center spin-page">
-      <SpinDial />
+      <SpinDial size="compact" />
     </main>
   );
 }

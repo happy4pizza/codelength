@@ -15,10 +15,21 @@ const MOMENTUM_BLEND = 0.35;
 const HIDE_SLIDE_V_CENTER_Y_PERCENT = 27.8336;
 const FRONT_DIAL_GEAR_CENTER_X_PERCENT = 50;
 const FRONT_DIAL_GEAR_CENTER_Y_PERCENT = 74.1291;
+const STATIC_COVER_DIAMETER_PERCENT = 88;
+const HIDE_SLIDE_ROTATION_MIN_DEG = -18;
+const HIDE_SLIDE_ROTATION_MAX_DEG = 158;
+const FRONT_DIAL_ROTATION_MIN_DEG = -86;
+const FRONT_DIAL_ROTATION_MAX_DEG = 86;
 
 type Point = {
   x: number;
   y: number;
+};
+
+type SpinDialSize = 'default' | 'compact';
+
+type SpinDialProps = {
+  size?: SpinDialSize;
 };
 
 function wrapAngleDelta(delta: number): number {
@@ -37,8 +48,13 @@ function angleFromCenter(point: Point, center: Point): number {
   return Math.atan2(point.y - center.y, point.x - center.x);
 }
 
-export default function SpinDial() {
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+export default function SpinDial({ size = 'default' }: SpinDialProps) {
   const dialRef = useRef<HTMLDivElement>(null);
+  const hideSlideRotorRef = useRef<HTMLDivElement>(null);
   const hideGrabRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const velocityRef = useRef(0);
@@ -111,6 +127,10 @@ export default function SpinDial() {
         return;
       }
 
+      if (event.pointerType === 'mouse' && event.button !== 0) {
+        return;
+      }
+
       event.preventDefault();
       stopMomentum();
 
@@ -119,8 +139,23 @@ export default function SpinDial() {
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2,
       };
+      const dialDiameter = Math.min(
+        dialRef.current.clientWidth,
+        dialRef.current.clientHeight
+      );
+      const staticCoverRadius =
+        (dialDiameter / 2) * (STATIC_COVER_DIAMETER_PERCENT / 100);
 
       const pointer = { x: event.clientX, y: event.clientY };
+      const distanceFromCenter = Math.hypot(
+        pointer.x - center.x,
+        pointer.y - center.y
+      );
+
+      if (distanceFromCenter < staticCoverRadius) {
+        return;
+      }
+
       lastPointerAngleRef.current = angleFromCenter(pointer, center);
       lastPointerTimeRef.current = event.timeStamp;
       pointerIdRef.current = event.pointerId;
@@ -204,14 +239,14 @@ export default function SpinDial() {
 
   const onHidePointerDown = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
-      if (!hideGrabRef.current) {
+      if (!hideSlideRotorRef.current || !hideGrabRef.current) {
         return;
       }
 
       event.preventDefault();
       event.stopPropagation();
 
-      const rect = hideGrabRef.current.getBoundingClientRect();
+      const rect = hideSlideRotorRef.current.getBoundingClientRect();
       const center = {
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2,
@@ -230,7 +265,7 @@ export default function SpinDial() {
   const onHidePointerMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       if (
-        !hideGrabRef.current ||
+        !hideSlideRotorRef.current ||
         hidePointerIdRef.current !== event.pointerId ||
         !isHideDragging
       ) {
@@ -240,7 +275,7 @@ export default function SpinDial() {
       event.preventDefault();
       event.stopPropagation();
 
-      const rect = hideGrabRef.current.getBoundingClientRect();
+      const rect = hideSlideRotorRef.current.getBoundingClientRect();
       const center = {
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2,
@@ -258,7 +293,13 @@ export default function SpinDial() {
       const angleDelta = wrapAngleDelta(nextAngle - prevAngle);
       const angleDeltaDeg = (angleDelta * 180) / Math.PI;
 
-      setHideRotation((prev) => prev + angleDeltaDeg);
+      setHideRotation((prev) =>
+        clamp(
+          prev + angleDeltaDeg,
+          HIDE_SLIDE_ROTATION_MIN_DEG,
+          HIDE_SLIDE_ROTATION_MAX_DEG
+        )
+      );
       hideLastPointerAngleRef.current = nextAngle;
     },
     [isHideDragging]
@@ -343,7 +384,13 @@ export default function SpinDial() {
       const angleDelta = wrapAngleDelta(nextAngle - prevAngle);
       const angleDeltaDeg = (angleDelta * 180) / Math.PI;
 
-      setFrontRotation((prev) => prev + angleDeltaDeg);
+      setFrontRotation((prev) =>
+        clamp(
+          prev + angleDeltaDeg,
+          FRONT_DIAL_ROTATION_MIN_DEG,
+          FRONT_DIAL_ROTATION_MAX_DEG
+        )
+      );
       frontLastPointerAngleRef.current = nextAngle;
     },
     [isFrontDragging]
@@ -374,7 +421,11 @@ export default function SpinDial() {
 
   return (
     <div className="spin-stage">
-      <div className="spin-assembly">
+      <div
+        className={`spin-assembly ${
+          size === 'compact' ? 'spin-assembly-compact' : ''
+        }`}
+      >
         <div
           ref={dialRef}
           className={`spin-dial ${isDragging ? 'spin-dial-dragging' : ''}`}
@@ -433,19 +484,22 @@ export default function SpinDial() {
           />
         </div>
         <div
-          ref={hideGrabRef}
+          ref={hideSlideRotorRef}
           className={`spin-hide-slide-rotor spin-hide-slide-grab-layer ${
             isHideDragging ? 'spin-hide-slide-grab-dragging' : ''
           }`}
-          onPointerDown={onHidePointerDown}
-          onPointerMove={onHidePointerMove}
-          onPointerUp={onHidePointerEnd}
-          onPointerCancel={onHidePointerEnd}
           style={{
             transform: `translate(-50%, -${HIDE_SLIDE_V_CENTER_Y_PERCENT}%) rotate(${hideRotation}deg)`,
           }}
         >
-          <div className="spin-hide-slide-grab">
+          <div
+            ref={hideGrabRef}
+            className="spin-hide-slide-grab"
+            onPointerDown={onHidePointerDown}
+            onPointerMove={onHidePointerMove}
+            onPointerUp={onHidePointerEnd}
+            onPointerCancel={onHidePointerEnd}
+          >
             <Image
               src="/hide-slide-grab.svg"
               alt=""

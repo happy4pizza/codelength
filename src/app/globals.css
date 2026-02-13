@@ -244,22 +244,6 @@ body {
   border-radius: 6px;
 }
 
-.home-link {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  display: inline-flex;
-  align-items: center;
-  color: #ffffff;
-  font-weight: 400;
-  text-decoration: none;
-  z-index: 20;
-}
-
-.home-link:hover {
-  text-decoration: underline;
-}
-
 .spin-page {
   overflow: hidden;
 }
@@ -276,6 +260,11 @@ body {
   position: relative;
   width: min(150vmin, 920px);
   aspect-ratio: 1 / 1;
+}
+
+.spin-assembly-compact {
+  width: min(78vmin, 470px);
+  transform: translateY(20vh);
 }
 
 .spin-dial {
@@ -334,9 +323,7 @@ body {
 
 .spin-hide-slide-grab-layer {
   z-index: 4;
-  pointer-events: auto;
-  cursor: grab;
-  touch-action: none;
+  pointer-events: none;
 }
 
 .spin-hide-slide-cover {
@@ -353,9 +340,12 @@ body {
   top: -11%;
   width: 35%;
   aspect-ratio: 231 / 123;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
 }
 
-.spin-hide-slide-grab-dragging {
+.spin-hide-slide-grab-dragging .spin-hide-slide-grab {
   cursor: grabbing;
 }
 
@@ -395,6 +385,10 @@ body {
   transform: translateX(-50%);
   z-index: 20;
   pointer-events: none;
+}
+
+.spin-assembly-compact .spin-cards-overlay {
+  bottom: 2vh;
 }
 
 .spin-cards {
