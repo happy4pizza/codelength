@@ -1,0 +1,37 @@
+{
+  "packName": "Core Card Pack",
+  "version": 1,
+  "description": "Base prompt pairs for LLM vs LLM play.",
+  "cards": [
+    {
+      "id": "core-0001",
+      "left": "harmless",
+      "right": "dangerous",
+      "tags": ["risk"]
+    },
+    {
+      "id": "core-0002",
+      "left": "temporary",
+      "right": "permanent",
+      "tags": ["time"]
+    },
+    {
+      "id": "core-0003",
+      "left": "ethical",
+      "right": "unethical",
+      "tags": ["morality"]
+    },
+    {
+      "id": "core-0004",
+      "left": "overrated",
+      "right": "underrated",
+      "tags": ["opinion"]
+    },
+    {
+      "id": "core-0005",
+      "left": "predictable",
+      "right": "chaotic",
+      "tags": ["behavior"]
+    }
+  ]
+}
