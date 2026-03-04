@@ -9,9 +9,12 @@ import {
   type PointerEvent,
 } from 'react';
 
+// Physics constants for momentum simulation
 const MIN_VELOCITY_TO_STOP = 1.5;
 const FRICTION_PER_FRAME = 0.965;
 const MOMENTUM_BLEND = 0.35;
+
+// UI constants for interaction areas and rotation limits
 const HIDE_SLIDE_V_CENTER_Y_PERCENT = 27.8336;
 const FRONT_DIAL_GEAR_CENTER_X_PERCENT = 50;
 const FRONT_DIAL_GEAR_CENTER_Y_PERCENT = 74.1291;
@@ -328,6 +331,21 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
     []
   );
 
+  const clearHideDrag = useCallback(() => {
+    const activePointerId = hidePointerIdRef.current;
+
+    setIsHideDragging(false);
+    hidePointerIdRef.current = null;
+    hideLastPointerAngleRef.current = null;
+
+    if (
+      activePointerId !== null &&
+      hideGrabRef.current?.hasPointerCapture(activePointerId)
+    ) {
+      hideGrabRef.current.releasePointerCapture(activePointerId);
+    }
+  }, []);
+
   const onFrontPointerDown = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       if (!frontDialRef.current) {
@@ -419,6 +437,80 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
     []
   );
 
+  const clearFrontDrag = useCallback(() => {
+    const activePointerId = frontPointerIdRef.current;
+
+    setIsFrontDragging(false);
+    frontPointerIdRef.current = null;
+    frontLastPointerAngleRef.current = null;
+
+    if (
+      activePointerId !== null &&
+      frontDialRef.current?.hasPointerCapture(activePointerId)
+    ) {
+      frontDialRef.current.releasePointerCapture(activePointerId);
+    }
+  }, []);
+
+  const clearAllDrags = useCallback(() => {
+    clearHideDrag();
+    clearFrontDrag();
+  }, [clearFrontDrag, clearHideDrag]);
+
+  const onHideLostPointerCapture = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (hidePointerIdRef.current === event.pointerId) {
+        clearHideDrag();
+      }
+    },
+    [clearHideDrag]
+  );
+
+  const onFrontLostPointerCapture = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (frontPointerIdRef.current === event.pointerId) {
+        clearFrontDrag();
+      }
+    },
+    [clearFrontDrag]
+  );
+
+  useEffect(() => {
+    const onWindowBlur = () => {
+      clearAllDrags();
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        clearAllDrags();
+      }
+    };
+
+    const onDocumentMouseLeave = (event: MouseEvent) => {
+      if (event.relatedTarget === null) {
+        clearAllDrags();
+      }
+    };
+
+    const onWindowMouseOut = (event: MouseEvent) => {
+      if (event.relatedTarget === null) {
+        clearAllDrags();
+      }
+    };
+
+    window.addEventListener('blur', onWindowBlur);
+    window.addEventListener('mouseout', onWindowMouseOut);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    document.addEventListener('mouseleave', onDocumentMouseLeave);
+
+    return () => {
+      window.removeEventListener('blur', onWindowBlur);
+      window.removeEventListener('mouseout', onWindowMouseOut);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      document.removeEventListener('mouseleave', onDocumentMouseLeave);
+    };
+  }, [clearAllDrags]);
+
   return (
     <div className="spin-stage">
       <div
@@ -499,6 +591,7 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
             onPointerMove={onHidePointerMove}
             onPointerUp={onHidePointerEnd}
             onPointerCancel={onHidePointerEnd}
+            onLostPointerCapture={onHideLostPointerCapture}
           >
             <Image
               src="/hide-slide-grab.svg"
@@ -519,6 +612,7 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
           onPointerMove={onFrontPointerMove}
           onPointerUp={onFrontPointerEnd}
           onPointerCancel={onFrontPointerEnd}
+          onLostPointerCapture={onFrontLostPointerCapture}
           style={{
             transform: `translate(-50%, -${FRONT_DIAL_GEAR_CENTER_Y_PERCENT}%)`,
           }}

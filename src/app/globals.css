@@ -48,6 +48,7 @@ body {
 
 .theme-page {
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 2rem 1.25rem;
 }
 
@@ -245,6 +246,10 @@ body {
 }
 
 .spin-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: 0;
+  padding-bottom: 0;
   overflow: hidden;
 }
 
