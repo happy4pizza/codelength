@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Card from './Card';
 import {
   useCallback,
   useEffect,
@@ -514,9 +515,8 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
   return (
     <div className="spin-stage">
       <div
-        className={`spin-assembly ${
-          size === 'compact' ? 'spin-assembly-compact' : ''
-        }`}
+        className={`spin-assembly ${size === 'compact' ? 'spin-assembly-compact' : ''
+          }`}
       >
         <div
           ref={dialRef}
@@ -577,9 +577,8 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
         </div>
         <div
           ref={hideSlideRotorRef}
-          className={`spin-hide-slide-rotor spin-hide-slide-grab-layer ${
-            isHideDragging ? 'spin-hide-slide-grab-dragging' : ''
-          }`}
+          className={`spin-hide-slide-rotor spin-hide-slide-grab-layer ${isHideDragging ? 'spin-hide-slide-grab-dragging' : ''
+            }`}
           style={{
             transform: `translate(-50%, -${HIDE_SLIDE_V_CENTER_Y_PERCENT}%) rotate(${hideRotation}deg)`,
           }}
@@ -605,9 +604,8 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
         </div>
         <div
           ref={frontDialRef}
-          className={`spin-front-dial-layer ${
-            isFrontDragging ? 'spin-front-dial-dragging' : ''
-          }`}
+          className={`spin-front-dial-layer ${isFrontDragging ? 'spin-front-dial-dragging' : ''
+            }`}
           onPointerDown={onFrontPointerDown}
           onPointerMove={onFrontPointerMove}
           onPointerUp={onFrontPointerEnd}
@@ -631,18 +629,6 @@ export default function SpinDial({ size = 'default' }: SpinDialProps) {
                 draggable={false}
               />
             </div>
-          </div>
-        </div>
-        <div className="spin-cards-overlay" aria-hidden="true">
-          <div className="spin-cards">
-            <Image
-              src="/cards.svg"
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 768px) 72vw, 280px"
-              draggable={false}
-            />
           </div>
         </div>
       </div>
