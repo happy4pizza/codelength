@@ -46,7 +46,7 @@ export default function Card() {
       <div style={{
         position: 'absolute',
         top: '40px',
-        left: '150%',
+        left: '210%',
         transform: 'translateX(-50%)',
         display: 'flex',
         gap: '12px',
@@ -63,7 +63,7 @@ export default function Card() {
           type="text"
           value={theme}
           onChange={(e) => setTheme(e.target.value)}
-          placeholder="Enter theme (e.g., Temperature)"
+          placeholder="Enter a card theme (optional)"
           disabled={isLoading}
           style={{
             padding: '10px 14px',
@@ -76,7 +76,7 @@ export default function Card() {
             outline: 'none',
             transition: 'all 0.2s ease',
             opacity: isLoading ? 0.6 : 1,
-            minWidth: '180px',
+            minWidth: '300px',
             pointerEvents: 'auto'
           }}
         />
@@ -98,7 +98,7 @@ export default function Card() {
             outline: 'none',
             transition: 'all 0.2s ease',
             opacity: isLoading ? 0.6 : 1,
-            minWidth: '100px',
+            minWidth: '110px',
             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
             backgroundPosition: 'right 8px center',
             backgroundRepeat: 'no-repeat',
