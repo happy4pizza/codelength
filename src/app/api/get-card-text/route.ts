@@ -1,16 +1,21 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export async function GET() {
+export async function GET(request: Request) {
   // Ensure the key exists
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return Response.json({ text: "API Key Missing" }, { status: 500 });
   }
 
+  // Get theme from query parameters
+  const url = new URL(request.url);
+  const theme = url.searchParams.get('theme');
+
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-  const prompt = "Give me exactly two opposite words separated by a slash (e.g., 'Hot / Cold'). No punctuation or extra sentences.";
+  const basePrompt = "Give me exactly two opposite words separated by a slash (e.g., 'Hot / Cold'). No punctuation or extra sentences.";
+  const prompt = theme ? `${basePrompt} The theme should be ${theme}.` : basePrompt;
 
   try {
     const result = await model.generateContent(prompt);
